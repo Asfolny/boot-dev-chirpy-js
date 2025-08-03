@@ -8,6 +8,20 @@
       "when": 1754234659474,
       "tag": "0000_brief_klaw",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1754244410973,
+      "tag": "0001_foamy_jackal",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1754244988104,
+      "tag": "0002_ambitious_rage",
+      "breakpoints": true
     }
   ]
 }
