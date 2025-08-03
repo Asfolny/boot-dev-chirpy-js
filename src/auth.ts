@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import type { JwtPayload } from "jsonwebtoken";
 
 import { UnauthorizedError, BadRequestError } from "./error.js";
@@ -56,4 +57,8 @@ export function getBearerToken(auth: string): string {
   }
 
   return auth.split(" ")[1];
+}
+
+export function makeRefreshToken() {
+  return crypto.randomBytes(32).toString("hex");
 }
