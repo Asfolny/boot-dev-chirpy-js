@@ -31,7 +31,10 @@ export function handlerValidateChirp(req: Request, res: Response) {
   } catch (error) {
     let msg = "Something went wrong";
     if (error instanceof Error) msg = error.message;
-      res.status(400).send(JSON.stringify({error: msg}));
+
+    if (msg === "Chirp is too long") throw new Error("Chirp is too long");
+
+    res.status(400).send(JSON.stringify({error: msg}));
     res.end();
   }
 }
