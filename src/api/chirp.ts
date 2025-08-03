@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { config } from "../config.js";
 import { BadRequestError } from "../error.js";
-import { createChirp } from "../db/queries/chirps.js";
+import { createChirp, getChirps } from "../db/queries/chirps.js";
 
 function validateChirp(msg: string) {
   if (msg.length > 140) {
@@ -37,3 +37,9 @@ export async function handlerCreateChirp(req: Request, res: Response) {
   res.status(201).json(chirp);
   res.end();
 }
+
+export async function handlerListChirps(req: Request, res: Response) {
+  res.json(await getChirps());
+  res.end();
+}
+
