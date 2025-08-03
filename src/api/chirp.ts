@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { config } from "../config.js";
 import { BadRequestError } from "../error.js";
+import { createChirp } from "../db/queries/chirps.js";
 
 function validateChirp(msg: string) {
   if (msg.length > 140) {
@@ -18,18 +19,21 @@ function validateChirp(msg: string) {
   return splitMsg.join(" ");
 }
 
-export async function handlerCreateChirps(req: Request, res: Response) {
+export async function handlerCreateChirp(req: Request, res: Response) {
   type parameters = {
     body: string;
+    userId: string;
   };
 
   const params: parameters = req.body;
-  if (params.body === undefined) {
-    throw new Error("Something went wrong");
+  if (params.body === undefined || params.userId === undefined) {
+    throw new BadRequestError("request body is wrong");
   }
 
-  const validatedMst = validateChirp(params.body);
+  console.log(params);
+  const validMsg = validateChirp(params.body);
+  const chirp = await createChirp({body: validMsg, userId: params.userId})
 
-  res.json({validatedMsg});
+  res.status(201).json(chirp);
   res.end();
 }
