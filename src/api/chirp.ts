@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { config } from "../config.js";
 import { BadRequestError } from "../error.js";
-import { createChirp, getChirps } from "../db/queries/chirps.js";
+import { createChirp, getChirps, getChirp } from "../db/queries/chirps.js";
 
 function validateChirp(msg: string) {
   if (msg.length > 140) {
@@ -43,3 +43,17 @@ export async function handlerListChirps(req: Request, res: Response) {
   res.end();
 }
 
+export async function handlerGetChirp(req: Request, res: Response) {
+  const chirpId = req.params.chirpId;
+  if (chirpId === undefined) {
+    throw new BadRequestError("No chirpId given");
+  }
+
+  const chirp = await getChirp(chirpId);
+  if (chirp === undefined) {
+    throw new BadRequestError("No such chirp");
+  }
+
+  res.json(chirp);
+  res.end();
+}
