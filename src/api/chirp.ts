@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { config } from "../config.js";
 import { BadRequestError } from "../error.js";
+import { validateJWT, getBearerToken } from "../auth.js";
 import { createChirp, getChirps, getChirp } from "../db/queries/chirps.js";
 
 function validateChirp(msg: string) {
@@ -22,17 +23,19 @@ function validateChirp(msg: string) {
 export async function handlerCreateChirp(req: Request, res: Response) {
   type parameters = {
     body: string;
-    userId: string;
   };
 
   const params: parameters = req.body;
-  if (params.body === undefined || params.userId === undefined) {
+  if (params.body === undefined) {
     throw new BadRequestError("request body is wrong");
   }
 
-  console.log(params);
   const validMsg = validateChirp(params.body);
-  const chirp = await createChirp({body: validMsg, userId: params.userId})
+
+  const auth = req.get("Authorization");
+  const data = validateJWT(getBearerToken(auth), config.api.jwtSecret);
+
+  const chirp = await createChirp({body: validMsg, userId: data})
 
   res.status(201).json(chirp);
   res.end();
