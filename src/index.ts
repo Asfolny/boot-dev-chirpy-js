@@ -5,8 +5,10 @@ import { drizzle } from "drizzle-orm/postgres-js";
 
 import { config } from "./config.js";
 import { handlerReadiness } from "./api/readiness.js";
-import { handlerMetrics, handlerReset } from "./api/metrics.js";
+import { handlerMetrics } from "./api/metrics.js";
+import { handlerReset } from "./api/reset.js";
 import { handlerValidateChirp } from "./api/chirp.js";
+import { handlerCreateUser } from "./api/users.js";
 import { middlewareLogResponses } from "./middleware/log.js";
 import { middlewareMetricsInc } from "./middleware/metrics.js";
 import { middlewareError } from "./middleware/error.js";

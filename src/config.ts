@@ -10,6 +10,7 @@ type APIConfig = {
   fileServerHits: number;
   port: number;
   badWords: string[];
+  platform: string;
 };
 
 type DBConfig = {
@@ -36,6 +37,7 @@ export const config: Config = {
     fileServerHits: 0,
     port: Number(envOrThrow("PORT")),
     badWords: ["kerfuffle", "sharbert", "fornax"],
+    platform: envOrThrow("PLATFORM"),
   },
   db: {
     url: envOrThrow("DB_URL"),
