@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { config } from "../config.js";
 
 export function handlerValidateChirp(req: Request, res: Response) {
   type parameters = {
@@ -17,7 +18,15 @@ export function handlerValidateChirp(req: Request, res: Response) {
       throw new Error("Chirp is too long");
     }
 
-    res.send(JSON.stringify({valid: true}));
+    let clean = "";
+    const splitMsg = params.body.split(" ");
+    for (let pos in splitMsg) {
+      if (config.badWords.includes(splitMsg[pos].toLowerCase())) {
+        splitMsg[pos] = "****";
+      }
+    }
+
+    res.send(JSON.stringify({cleanedBody: splitMsg.join(" ")}));
     res.end();
   } catch (error) {
     let msg = "Something went wrong";
