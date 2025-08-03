@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 
-import { createUser, getUser } from "../db/queries/users.js";
+import { createUser, getUser, updateUser } from "../db/queries/users.js";
 import { NewUser } from "../db/schema.js";
 import { BadRequestError, UnauthorizedError } from "../error.js";
-import { hashPassword, checkPasswordHash, makeJWT, makeRefreshToken, getBearerToken } from "../auth.js";
+import { hashPassword, checkPasswordHash, makeJWT, validateJWT, makeRefreshToken, getBearerToken } from "../auth.js";
 import { config } from "../config.js";
 import { revokeRefreshToken, saveRefreshToken, userForRefreshToken } from "../db/queries/refresh.js";
 
@@ -102,4 +102,31 @@ export async function handlerRevoke(req: Request, res: Response) {
   const refreshToken = getBearerToken(req);
   await revokeRefreshToken(refreshToken);
   res.status(204).send();
+}
+
+export async function handlerUsersUpdate(req: Request, res: Response) {
+  type parameters = {
+    password: string;
+    email: string;
+  };
+
+  const token = getBearerToken(req);
+  const subject = validateJWT(token, config.jwt.secret);
+
+  const params: parameters = req.body;
+
+  if (!params.password || !params.email) {
+    throw new BadRequestError("Missing required fields");
+  }
+
+  const hashedPassword = await hashPassword(params.password);
+
+  const user = await updateUser(subject, params.email, hashedPassword);
+
+  res.json({
+    id: user.id,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    email: user.email,
+  } satisfies UserResponse);
 }
