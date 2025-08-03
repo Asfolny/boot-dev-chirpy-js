@@ -21,7 +21,7 @@ export function handlerValidateChirp(req: Request, res: Response) {
   let clean = "";
   const splitMsg = params.body.split(" ");
   for (let pos in splitMsg) {
-    if (config.badWords.includes(splitMsg[pos].toLowerCase())) {
+    if (config.api.badWords.includes(splitMsg[pos].toLowerCase())) {
       splitMsg[pos] = "****";
     }
   }
