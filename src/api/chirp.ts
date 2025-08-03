@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { config } from "../config.js";
-import { BadRequestError } from "../error.js";
+import { BadRequestError, UnauthorizedError } from "../error.js";
 import { validateJWT, getBearerToken } from "../auth.js";
 import { createChirp, getChirps, getChirp } from "../db/queries/chirps.js";
 
@@ -33,7 +33,11 @@ export async function handlerCreateChirp(req: Request, res: Response) {
   const validMsg = validateChirp(params.body);
 
   const auth = req.get("Authorization");
-  const data = validateJWT(getBearerToken(auth), config.api.jwtSecret);
+  if (auth === undefined) {
+    throw new UnauthorizedError("No auth header");
+  }
+
+  const data = validateJWT(getBearerToken(auth), config.jwt.secret);
 
   const chirp = await createChirp({body: validMsg, userId: data})
 
