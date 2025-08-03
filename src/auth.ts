@@ -1,4 +1,5 @@
-import { hash, compare } from "bcrypt"
+import { Request } from "express";
+import { hash, compare } from "bcrypt";
 import { sign, verify, type JwtPayload } from "jsonwebtoken";
 
 import { UnauthorizedError } from "./error.js";
@@ -46,4 +47,13 @@ export function validateJWT(tokenString: string, secret: string) {
   }
 
   return decoded.sub;
+}
+
+export function getBearerToken(req: Request): string {
+  const auth = req.get("Authorization");
+  if (!auth || !auth.startsWith("Bearer ")) {
+    throw new UnauthorizedError("No authorization token");
+  }
+
+  return auth.split(" ")[1];
 }
