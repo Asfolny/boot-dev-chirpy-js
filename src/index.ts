@@ -9,6 +9,7 @@ import { handlerMetrics } from "./api/metrics.js";
 import { handlerReset } from "./api/reset.js";
 import { handlerCreateChirp, handlerListChirps, handlerGetChirp, handlerChirpsDelete } from "./api/chirp.js";
 import { handlerCreateUser, handlerLogin, handlerRefresh, handlerRevoke, handlerUsersUpdate } from "./api/users.js";
+import { handlerWebhook } from "./api/webhooks.js";
 import { middlewareLogResponses } from "./middleware/log.js";
 import { middlewareMetricsInc } from "./middleware/metrics.js";
 import { middlewareError } from "./middleware/error.js";
@@ -58,8 +59,13 @@ app.post("/api/login", (req, res, next) => {
 app.post("/api/refresh", (req, res, next) => {
   Promise.resolve(handlerRefresh(req, res)).catch(next);
 });
+
 app.post("/api/revoke", (req, res, next) => {
   Promise.resolve(handlerRevoke(req, res)).catch(next);
+});
+
+app.post("/api/polka/webhooks", (req, res, next) => {
+  Promise.resolve(handlerWebhook(req, res)).catch(next);
 });
 
 // Global error handler, this has to be the last app.* instruction

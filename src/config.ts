@@ -47,6 +47,7 @@ export const config: Config = {
     port: Number(envOrThrow("PORT")),
     badWords: ["kerfuffle", "sharbert", "fornax"],
     platform: envOrThrow("PLATFORM"),
+    polkaApiKey: envOrThrow("POLKA_KEY"),
   },
   db: {
     url: envOrThrow("DB_URL"),
