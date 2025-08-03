@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import { config } from "../config.js";
-import { BadRequestError, UnauthorizedError } from "../error.js";
+import { BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError } from "../error.js";
 import { validateJWT, getBearerToken } from "../auth.js";
-import { createChirp, getChirps, getChirp } from "../db/queries/chirps.js";
+import { createChirp, getChirps, getChirp, deleteChirp } from "../db/queries/chirps.js";
 
 function validateChirp(msg: string) {
   if (msg.length > 140) {
@@ -53,9 +53,32 @@ export async function handlerGetChirp(req: Request, res: Response) {
 
   const chirp = await getChirp(chirpId);
   if (chirp === undefined) {
-    throw new BadRequestError("No such chirp");
+    throw new NotFoundError("No such chirp");
   }
 
   res.json(chirp);
   res.end();
+}
+
+export async function handlerChirpsDelete(req: Request, res: Response) {
+  const { chirpId } = req.params;
+
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.jwt.secret);
+
+  const chirp = await getChirp(chirpId);
+  if (!chirp) {
+    throw new NotFoundError(`Chirp with chirpId: ${chirpId} not found`);
+  }
+
+  if (chirp.userId !== userId) {
+    throw new ForbiddenError("You can't delete this chirp");
+  }
+
+  const deleted = await deleteChirp(chirpId);
+  if (!deleted) {
+    throw new Error(`Failed to delete chirp with chirpId: ${chirpId}`);
+  }
+
+  res.status(204).send();
 }
