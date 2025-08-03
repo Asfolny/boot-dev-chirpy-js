@@ -32,12 +32,7 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 
   const validMsg = validateChirp(params.body);
 
-  const auth = req.get("Authorization");
-  if (auth === undefined) {
-    throw new UnauthorizedError("No auth header");
-  }
-
-  const data = validateJWT(getBearerToken(auth), config.jwt.secret);
+  const data = validateJWT(getBearerToken(req), config.jwt.secret);
 
   const chirp = await createChirp({body: validMsg, userId: data})
 

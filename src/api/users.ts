@@ -77,11 +77,7 @@ export async function handlerLogin(req: Request, res: Response) {
 }
 
 export async function handlerRefresh(req: Request, res: Response) {
-  let auth = req.get("Authorization");
-  if (auth === undefined) {
-    auth = "";
-  }
-  let refreshToken = getBearerToken(auth);
+  let refreshToken = getBearerToken(req);
 
   const result = await userForRefreshToken(refreshToken);
   if (!result) {
@@ -103,11 +99,7 @@ export async function handlerRefresh(req: Request, res: Response) {
 }
 
 export async function handlerRevoke(req: Request, res: Response) {
-  let auth = req.get("Authorization");
-  if (auth === undefined) {
-    auth = "";
-  }
-  const refreshToken = getBearerToken(auth);
+  const refreshToken = getBearerToken(req);
   await revokeRefreshToken(refreshToken);
   res.status(204).send();
 }

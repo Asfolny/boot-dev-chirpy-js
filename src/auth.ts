@@ -51,12 +51,21 @@ export function validateJWT(tokenString: string, secret: string) {
   return decoded.sub;
 }
 
-export function getBearerToken(auth: string): string {
-  if (!auth || !auth.startsWith("Bearer ")) {
-    throw new BadRequestError("No authorization token");
+export function getBearerToken(req: Request) {
+  const authHeader = req.get("Authorization");
+  if (!authHeader) {
+    throw new UnauthorizedError("Malformed authorization header");
   }
 
-  return auth.split(" ")[1];
+  return extractBearerToken(authHeader);
+}
+
+export function extractBearerToken(header: string) {
+  const splitAuth = header.split(" ");
+  if (splitAuth.length < 2 || splitAuth[0] !== "Bearer") {
+    throw new BadRequestError("Malformed authorization header");
+  }
+  return splitAuth[1];
 }
 
 export function makeRefreshToken() {
