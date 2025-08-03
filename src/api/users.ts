@@ -32,6 +32,7 @@ export async function handlerCreateUser(req: Request, res: Response) {
     email: user.email,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    isChirpyRed: user.isChirpyRed,
   } satisfies UserResponse);
   res.end();
 }
@@ -70,6 +71,7 @@ export async function handlerLogin(req: Request, res: Response) {
     email: user.email,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    isChirpyRed: user.isChirpyRed,
     token: token,
     refreshToken: refreshToken,
   } satisfies LoginResponse);
@@ -128,5 +130,6 @@ export async function handlerUsersUpdate(req: Request, res: Response) {
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     email: user.email,
+    isChirpyRed: user.isChirpyRed,
   } satisfies UserResponse);
 }

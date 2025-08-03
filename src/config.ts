@@ -12,6 +12,7 @@ type APIConfig = {
   port: number;
   badWords: string[];
   platform: string;
+  polkaApiKey: string;
 };
 
 type DBConfig = {
