@@ -3,6 +3,7 @@ import { config } from "../config.js";
 import { BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError } from "../error.js";
 import { validateJWT, getBearerToken } from "../auth.js";
 import { createChirp, getChirps, getChirp, deleteChirp } from "../db/queries/chirps.js";
+import { NewChirp } from "../db/schema.js";
 
 function validateChirp(msg: string) {
   if (msg.length > 140) {
@@ -41,8 +42,31 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 }
 
 export async function handlerListChirps(req: Request, res: Response) {
-  res.json(await getChirps());
-  res.end();
+  const chirps = await getChirps();
+
+  let authorId = "";
+  let authorIdQuery = req.query.authorId;
+  if (typeof authorIdQuery === "string") {
+    authorId = authorIdQuery;
+  }
+
+  let sortDirection = "asc";
+  let sortDirectionParam = req.query.sort;
+  if (sortDirectionParam === "desc") {
+    sortDirection = "desc";
+  }
+
+  const filteredChirps = chirps.filter(
+    (chirp) => chirp.userId === authorId || authorId === "",
+  );
+
+  filteredChirps.sort((a, b) =>
+    sortDirection === "asc"
+      ? a.createdAt.getTime() - b.createdAt.getTime()
+      : b.createdAt.getTime() - a.createdAt.getTime(),
+  );
+
+  res.json(filteredChirps);
 }
 
 export async function handlerGetChirp(req: Request, res: Response) {
