@@ -1,8 +1,9 @@
 import { Request } from "express";
 import { hash, compare } from "bcrypt";
-import { sign, verify, type JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
 
-import { UnauthorizedError } from "./error.js";
+import { UnauthorizedError, BadRequestError } from "./error.js";
 
 export async function hashPassword(password: string) {
   return await hash(password, 10);
@@ -18,7 +19,7 @@ const TOKEN_ISSUER = "chirpy"
 export function makeJWT(userID: string, expiresIn: number, secret: string) {
   const iat = Math.floor(Date.now() / 1000);
 
-  return sign(
+  return jwt.sign(
     {
       iss: TOKEN_ISSUER,
       sub: userID,
@@ -33,7 +34,7 @@ export function makeJWT(userID: string, expiresIn: number, secret: string) {
 export function validateJWT(tokenString: string, secret: string) {
   let decoded: payload;
   try {
-    decoded = verify(tokenString, secret) as JwtPayload;
+    decoded = jwt.verify(tokenString, secret) as JwtPayload;
   } catch (e) {
     throw new UnauthorizedError("Invalid token");
   }
@@ -49,10 +50,9 @@ export function validateJWT(tokenString: string, secret: string) {
   return decoded.sub;
 }
 
-export function getBearerToken(req: Request): string {
-  const auth = req.get("Authorization");
+export function getBearerToken(auth: string): string {
   if (!auth || !auth.startsWith("Bearer ")) {
-    throw new UnauthorizedError("No authorization token");
+    throw new BadRequestError("No authorization token");
   }
 
   return auth.split(" ")[1];
