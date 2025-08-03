@@ -11,6 +11,7 @@ type APIConfig = {
   port: number;
   badWords: string[];
   platform: string;
+  jwtSecret: string
 };
 
 type DBConfig = {
@@ -38,6 +39,7 @@ export const config: Config = {
     port: Number(envOrThrow("PORT")),
     badWords: ["kerfuffle", "sharbert", "fornax"],
     platform: envOrThrow("PLATFORM"),
+    jwtSecret: envOrThrow("JWT_SECRET"),
   },
   db: {
     url: envOrThrow("DB_URL"),
