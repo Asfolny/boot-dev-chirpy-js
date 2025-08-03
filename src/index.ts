@@ -26,8 +26,13 @@ app.use("/app", middlewareMetricsInc, express.static("./src/app"));
 app.get("/admin/metrics", handlerMetrics);
 app.post("/admin/reset", handlerReset);
 app.get("/api/healthz", handlerReadiness);
+
 app.post("/api/validate_chirp", (req, res, next) => {
   Promise.resolve(handlerValidateChirp(req, res)).catch(next);
+});
+
+app.post("/api/users", (req, res, next) => {
+  Promise.resolve(handlerCreateUser(req, res)).catch(next);
 });
 
 // Global error handler, this has to be the last app.* instruction
